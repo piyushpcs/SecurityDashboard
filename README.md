@@ -1,4 +1,4 @@
-# 🛡️ Intelligent Security Dashboard
+# 🛡️ SentinelEye
 
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
 ![Django](https://img.shields.io/badge/Django-4.2-green)
@@ -6,7 +6,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A sophisticated, AI-powered intruder detection system that transforms any camera into a smart security device. It uses **Computer Vision** to detect faces, identify authorized personnel, and send real-time alerts (SMS, Email, Audio) for unauthorized intruders, all managed via a reactive web dashboard.
+**SentinelEye** is a sophisticated, AI-powered intruder detection system that transforms any camera into a smart security device. It uses **Computer Vision** to detect faces, identify authorized personnel, and send real-time alerts (SMS, Email, Audio) for unauthorized intruders, all managed via a reactive web dashboard.
 
 
 
@@ -167,8 +167,3 @@ Contributions are welcome! Here's how you can help:
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
-
-
-<p align="center">
-  Made with ❤️ by Piyush
-</p>
