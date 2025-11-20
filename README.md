@@ -8,8 +8,7 @@
 
 A sophisticated, AI-powered intruder detection system that transforms any camera into a smart security device. It uses **Computer Vision** to detect faces, identify authorized personnel, and send real-time alerts (SMS, Email, Audio) for unauthorized intruders, all managed via a reactive web dashboard.
 
-![Dashboard Screenshot](https://via.placeholder.com/800x400?text=Security+Dashboard+Screenshot+Here)
-*(Replace this link with a real screenshot of your dashboard!)*
+
 
 ## ✨ Key Features
 
@@ -168,9 +167,9 @@ Contributions are welcome! Here's how you can help:
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
----
+
 
 <p align="center">
   Made with ❤️ by Piyush
