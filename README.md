@@ -67,6 +67,12 @@ It is recommended to use a virtual environment to manage dependencies.
 python3 -m venv venv
 source venv/bin/activate
 ```
+
+**Windows:**
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
 ### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
@@ -94,7 +100,7 @@ EMAIL_HOST_PASSWORD=your_app_password
 
 python manage.py migrate
 ```
-6. Run the Server
+### 6. Run the Server
 ```Bash
 
 python manage.py runserver
@@ -113,6 +119,7 @@ docker-compose up --build
 2. Access: The application will be available at http://localhost:8000.
 
 (Note: On macOS, Docker may not be able to access the built-in webcam directly. Docker deployment is best used with IP Cameras or on Linux hosts).
+
 **Windows:**
 ```bash
 python -m venv venv
