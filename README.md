@@ -82,8 +82,6 @@ mv .env.example .env
 
 Open .env and fill in your credentials:
 
-Ini, TOML
-
 #### Example .env configuration
 ```ini
 TWILIO_ACCOUNT_SID=your_sid_here
