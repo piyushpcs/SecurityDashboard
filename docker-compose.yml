@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Sync these folders so photos/db persist on your actual laptop
+      - ./known_faces:/app/known_faces
+      - ./intruders:/app/intruders
+      - ./security.db:/app/security.db
+    environment:
+      # This passes your secret keys from your local .env file into the container
+      - TWILIO_ACCOUNT_SID=${TWILIO_ACCOUNT_SID}
+      - TWILIO_AUTH_TOKEN=${TWILIO_AUTH_TOKEN}
+      - TWILIO_PHONE_NUMBER=${TWILIO_PHONE_NUMBER}
+      - ADMIN_PHONE_NUMBER=${ADMIN_PHONE_NUMBER}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - IP_CAMERA_URL=${IP_CAMERA_URL}
