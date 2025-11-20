@@ -1,0 +1,105 @@
+/* --- General Setup (No changes) --- */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            margin: 0; background-color: #f0f2f5; color: #333;
+        }
+        h1, h2, h3 { margin-top: 0; font-weight: 500; }
+        
+        /* --- Header (No changes) --- */
+        .header {
+            background-color: #ffffff; padding: 18px 30px; border-bottom: 1px solid #ddd;
+            font-size: 1.5em; font-weight: 700; color: #1a73e8;
+        }
+        .header .fa-shield-halved { margin-right: 12px; }
+
+        /* --- Grid (No changes) --- */
+        .dashboard-grid {
+            display: grid; grid-template-columns: 2fr 1fr;
+            gap: 24px; padding: 24px; max-width: 1600px; margin: 0 auto;
+        }
+        .card {
+            background: #ffffff; border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            padding: 24px; overflow: hidden;
+        }
+        
+        /* --- Video (No changes) --- */
+        .card.video-feed { padding: 0; }
+        .card .card-header { padding: 20px 24px; border-bottom: 1px solid #eee; }
+        .video-container { width: 100%; background-color: #000; }
+        .video-container img { width: 100%; height: auto; display: block; }
+        .control-column { display: flex; flex-direction: column; gap: 24px; }
+        
+        /* --- Status Module (No changes) --- */
+        .status-text {
+            display: flex; align-items: center; font-size: 1.5em;
+            font-weight: 700; gap: 12px;
+        }
+        .status-text .fa-circle { font-size: 0.8em; }
+        .status-ARMED { color: #d93025; }
+        .status-DISARMED { color: #1e8e3e; }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+        .btn {
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; padding: 16px; font-size: 1.1em;
+            font-weight: 700; text-decoration: none; color: #fff;
+            border: none; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-arm { background-color: #d93025; }
+        .btn-arm:hover { background-color: #b0241c; }
+        .btn-disarm { background-color: #1a73e8; }
+        .btn-disarm:hover { background-color: #1765c4; }
+        .btn:disabled, .btn.btn-disabled {
+            background-color: #aaa !important; color: #eee !important;
+            cursor: not-allowed !important; opacity: 0.7 !important;
+        }
+
+        /* --- Face Manager Module (No changes) --- */
+        .face-form { display: flex; flex-direction: column; gap: 15px; }
+        .face-form label { font-weight: 500; color: #555; }
+        .face-form input[type="text"], .face-form input[type="file"] {
+            padding: 12px; font-size: 1em; border: 1px solid #ccc; border-radius: 5px;
+        }
+        .btn-submit { background-color: #1e8e3e; color: white; }
+        .btn-submit:hover { background-color: #1a7d36; }
+        .face-list { list-style: none; padding-left: 0; margin-top: 20px; }
+        .face-list li {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 10px; font-size: 1.1em; padding: 12px 0; border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        .face-list li:last-child { border-bottom: none; }
+        .face-list .fa-user-check { color: #1a73e8; }
+        .btn-delete-face {
+            background: #d93025; color: white; border: none;
+            border-radius: 5px; padding: 5px 10px; font-size: 0.8em;
+            font-weight: 500; cursor: pointer; transition: background 0.2s ease;
+        }
+        .btn-delete-face:hover { background: #b0241c; }
+        .btn-delete-face:disabled { background: #aaa; }
+        
+        .upload-message {
+            text-align: center; font-weight: bold; padding: 10px;
+            display: none; /* Hide by default */
+        }
+        .msg-success { color: #1e8e3e; }
+        .msg-error { color: #d93025; }
+
+        /* --- Event Log Module (No changes) --- */
+        .event-log-container { max-height: 400px; overflow-y: auto; }
+        .event-item {
+            display: grid; grid-template-columns: 160px 1fr;
+            gap: 15px; padding: 12px 0; border-bottom: 1px solid #eee;
+        }
+        .event-item:last-child { border-bottom: none; }
+        .event-time { font-size: 0.9em; color: #666; }
+        .event-details { font-size: 0.95em; font-weight: 500; }
+        .event-details i { margin-right: 8px; width: 18px; text-align: center; }
+        .event-INTRUDER_DETECTED, .event-FACE_DELETED, .event-FACE_ADDED { color: #d93025; } /* <-- Added FACE_ADDED */
+        .event-SYSTEM_ARMED { color: #b0241c; }
+        .event-SYSTEM_DISARMED { color: #1a73e8; }
+        .event-SYSTEM_RESET { color: #1e8e3e; }
+        .event-SYSTEM_STARTUP { color: #555; }

@@ -1,0 +1,7 @@
+Django
+opencv-python
+face-recognition
+numpy
+twilio
+python-dotenv
+simpleaudio

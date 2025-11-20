@@ -1,0 +1,330 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Security Dashboard</title>
+    
+    {% load static %}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;5.00;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
+</head>
+<body>
+
+    <header class="header">
+        <i class="fa-solid fa-shield-halved"></i>
+        Security System Dashboard
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <div class="card video-feed">
+            <div class="card-header">
+                <h2><i class="fa-solid fa-video" style="margin-right: 10px; color: #555;"></i>Live Feed</h2>
+            </div>
+            <div class="video-container">
+                <img src="{% url 'video_feed' %}" alt="Live video feed">
+            </div>
+        </div>
+        
+        <div class="control-column">
+            
+            <div class="card">
+                <h2><i class="fa-solid fa-sliders" style="margin-right: 10px; color: #555;"></i>System Control</h2>
+                {% if current_status == "ARMED" %}
+                    <p class="status-text status-ARMED" id="status-text">
+                        <i class="fa-solid fa-circle"></i> Status: ARMED
+                    </p>
+                {% elif current_status == "DISARMED" %}
+                    <p class="status-text status-DISARMED" id="status-text">
+                        <i class="fa-solid fa-circle"></i> Status: DISARMED
+                    </p>
+                {% else %}
+                    <p class="status-text" id="status-text">Status: UNKNOWN</p>
+                {% endif %}
+                <div class="controls">
+                    <button id="btn-arm" class="btn btn-arm" data-status="ARMED" {% if current_status == "ARMED" %}disabled{% endif %}>
+                        <i class="fa-solid fa-lock"></i> ARM
+                    </button>
+                    <button id="btn-disarm" class="btn btn-disarm" data-status="DISARMED" {% if current_status == "DISARMED" %}disabled{% endif %}>
+                        <i class="fa-solid fa-lock-open"></i> DISARM
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fa-solid fa-users" style="margin-right: 10px; color: #555;"></i>Authorized People</h2>
+                
+                <form id="face-upload-form" class="face-form">
+                    {% csrf_token %}
+                    <label for="person_name">Add New Person:</label>
+                    <input type="text" id="person_name" name="person_name" placeholder="Person's Name" required>
+                    <input type="file" id="face_image" name="face_image" accept="image/jpeg, image/png" required>
+                    <input type="submit" value="Upload Face" class="btn btn-submit">
+                </form>
+                
+                <p id="upload-message" class="upload-message"></p>
+                
+                <h3 style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">Current List:</h3>
+                <ul class="face-list" id="face-list">
+                    {% for face_filename in known_faces_list %}
+                        <li>
+                            <span>
+                                <i class="fa-solid fa-user-check"></i> {{ face_filename }}
+                            </span>
+                            <button class="btn-delete-face" data-filename="{{ face_filename }}">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </button>
+                        </li>
+                    {% empty %}
+                        <li id="no-faces-message">No faces added yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2><i class="fa-solid fa-list-ul" style="margin-right: 10px; color: #555;"></i>Event Log</h2>
+                <div class="event-log-container" id="event-log-container">
+                    {% for event in events %}
+                        <div class="event-item">
+                            <span class="event-time">{{ event.timestamp }}</span>
+                            <span class="event-details event-{{ event.event_type }}">
+                                {% if event.event_type == "INTRUDER_DETECTED" %}
+                                    <i class="fa-solid fa-person-military-pointing"></i>
+                                {% elif event.event_type == "SYSTEM_ARMED" %}
+                                    <i class="fa-solid fa-lock"></i>
+                                {% elif event.event_type == "SYSTEM_DISARMED" %}
+                                    <i class="fa-solid fa-lock-open"></i>
+                                {% elif event.event_type == "SYSTEM_RESET" %}
+                                    <i class="fa-solid fa-check"></i>
+                                {% elif event.event_type == "FACE_DELETED" %}
+                                    <i class="fa-solid fa-user-minus"></i>
+                                {% elif event.event_type == "FACE_ADDED" %}
+                                    <i class="fa-solid fa-user-plus"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-info-circle"></i>
+                                {% endif %}
+                                {{ event.details }}
+                            </span>
+                        </div>
+                    {% empty %}
+                        <div class="event-item" id="no-events-message">
+                            <span class="event-details">No events logged yet.</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div> </div> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // --- CSRF Token for all AJAX requests ---
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            // --- Logic for Arm/Disarm (No changes) ---
+            const armButton = document.getElementById('btn-arm');
+            const disarmButton = document.getElementById('btn-disarm');
+            const statusText = document.getElementById('status-text');
+            armButton.addEventListener('click', () => handleStatusClick(`/set_status/ARMED/`, 'ARMED'));
+            disarmButton.addEventListener('click', () => handleStatusClick(`/set_status/DISARMED/`, 'DISARMED'));
+            
+            async function handleStatusClick(url, newStatus) {
+                armButton.disabled = true;
+                disarmButton.disabled = true;
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) { throw new Error('Server error'); }
+                    const data = await response.json();
+                    if (data.status) { updateUI(data.status); }
+                } catch (error) {
+                    console.error('Error setting status:', error);
+                    if (statusText.textContent.includes('ARMED')) {
+                        updateUI('ARMED');
+                    } else {
+                        updateUI('DISARMED');
+                    }
+                }
+            }
+            function updateUI(newStatus) {
+                if (newStatus === 'ARMED') {
+                    statusText.innerHTML = '<i class="fa-solid fa-circle"></i> Status: ARMED';
+                    statusText.className = 'status-text status-ARMED';
+                    armButton.disabled = true;
+                    disarmButton.disabled = false;
+                } else if (newStatus === 'DISARMED') {
+                    statusText.innerHTML = '<i class="fa-solid fa-circle"></i> Status: DISARMED';
+                    statusText.className = 'status-text status-DISARMED';
+                    armButton.disabled = false;
+                    disarmButton.disabled = true;
+                }
+            }
+            
+            // --- Logic for Deleting Faces (No changes) ---
+            const faceList = document.getElementById('face-list');
+            faceList.addEventListener('click', async (event) => {
+                const deleteButton = event.target.closest('.btn-delete-face');
+                if (!deleteButton) { return; }
+                const filename = deleteButton.dataset.filename;
+                const listItem = deleteButton.closest('li');
+                if (!confirm(`Are you sure you want to delete ${filename}?`)) { return; }
+                deleteButton.disabled = true;
+                deleteButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                try {
+                    const response = await fetch(`/delete_face/${filename}/`);
+                    const data = await response.json();
+                    if (data.status === 'SUCCESS') {
+                        listItem.style.opacity = '0';
+                        listItem.style.transform = 'translateX(-20px)';
+                        setTimeout(() => {
+                            listItem.remove();
+                            if (faceList.children.length === 0) {
+                                faceList.innerHTML = '<li id="no-faces-message">No faces added yet.</li>';
+                            }
+                        }, 300);
+                    } else { throw new Error(data.message || 'Failed to delete'); }
+                } catch (error) {
+                    console.error('Error deleting face:', error);
+                    alert(`Could not delete face: ${error.message}`);
+                    deleteButton.disabled = false;
+                    deleteButton.innerHTML = '<i class="fa-solid fa-trash"></i> Delete';
+                }
+            });
+            
+            // --- NEW: Logic for AJAX Face Upload ---
+            const faceForm = document.getElementById('face-upload-form');
+            const uploadMessage = document.getElementById('upload-message');
+            
+            faceForm.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Stop the default page reload
+                
+                const submitButton = faceForm.querySelector('.btn-submit');
+                submitButton.disabled = true;
+                submitButton.value = "Uploading...";
+                
+                // Get the form data
+                const formData = new FormData(faceForm);
+                
+                try {
+                    const response = await fetch(window.location.href, { // Post to the main page
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': csrfToken // Django needs this
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.status === 'SUCCESS') {
+                        // Success! Add the new face to the list
+                        addFaceToList(data.filename);
+                        faceForm.reset(); // Clear the form
+                        showMessage('success', `Uploaded ${data.filename}!`);
+                    } else {
+                        // Show an error message
+                        throw new Error(data.message || 'Upload failed');
+                    }
+                } catch (error) {
+                    console.error('Error uploading face:', error);
+                    showMessage('error', error.message);
+                } finally {
+                    submitButton.disabled = false;
+                    submitButton.value = "Upload Face";
+                }
+            });
+            
+            function addFaceToList(filename) {
+                // Remove the "No faces added yet" message if it exists
+                const noFacesMsg = document.getElementById('no-faces-message');
+                if (noFacesMsg) {
+                    noFacesMsg.remove();
+                }
+                
+                // Create the new list item
+                const newLi = document.createElement('li');
+                newLi.innerHTML = `
+                    <span>
+                        <i class="fa-solid fa-user-check"></i> ${filename}
+                    </span>
+                    <button class="btn-delete-face" data-filename="${filename}">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                `;
+                faceList.prepend(newLi); // Add to the top of the list
+            }
+            
+            function showMessage(type, text) {
+                uploadMessage.textContent = text;
+                uploadMessage.className = `upload-message ${type === 'success' ? 'msg-success' : 'msg-error'}`;
+                uploadMessage.style.display = 'block';
+                // Hide the message after 5 seconds
+                setTimeout(() => {
+                    uploadMessage.style.display = 'none';
+                }, 5000);
+            }
+            
+            // --- NEW: Logic for Live Event Log ---
+            const eventLogContainer = document.getElementById('event-log-container');
+            
+            // This function builds the HTML for a single event
+            function createEventHTML(event) {
+                let iconClass = 'fa-solid fa-info-circle'; // Default icon
+                if (event.event_type === "INTRUDER_DETECTED") iconClass = 'fa-solid fa-person-military-pointing';
+                else if (event.event_type === "SYSTEM_ARMED") iconClass = 'fa-solid fa-lock';
+                else if (event.event_type === "SYSTEM_DISARMED") iconClass = 'fa-solid fa-lock-open';
+                else if (event.event_type === "SYSTEM_RESET") iconClass = 'fa-solid fa-check';
+                else if (event.event_type === "FACE_DELETED") iconClass = 'fa-solid fa-user-minus';
+                else if (event.event_type === "FACE_ADDED") iconClass = 'fa-solid fa-user-plus';
+                
+                return `
+                    <div class="event-item">
+                        <span class="event-time">${event.timestamp}</span>
+                        <span class="event-details event-${event.event_type}">
+                            <i class="${iconClass}"></i>
+                            ${event.details}
+                        </span>
+                    </div>
+                `;
+            }
+            
+            // This function fetches new events and rebuilds the log
+            async function fetchLatestEvents() {
+                try {
+                    const response = await fetch('/get_latest_events/');
+                    const data = await response.json();
+                    
+                    if (data.status === 'SUCCESS' && data.events) {
+                        // Rebuild the entire event log
+                        if (data.events.length > 0) {
+                            let newHTML = '';
+                            for (const event of data.events) {
+                                newHTML += createEventHTML(event);
+                            }
+                            eventLogContainer.innerHTML = newHTML;
+                        } else {
+                            eventLogContainer.innerHTML = `
+                                <div class="event-item" id="no-events-message">
+                                    <span class="event-details">No events logged yet.</span>
+                                </div>
+                            `;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error fetching latest events:', error);
+                }
+            }
+            
+            // Poll for new events every 5 seconds (5000 milliseconds)
+            setInterval(fetchLatestEvents, 5000);
+            
+        });
+    </script>
+
+</body>
+</html>

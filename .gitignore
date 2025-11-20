@@ -1,0 +1,21 @@
+# Ignore Virtual Environment
+venv/
+.Python
+env/
+
+# Ignore Python Cache
+__pycache__/
+*.pyc
+
+# Ignore Mac System Files
+.DS_Store
+
+# --- SECURITY: IGNORE SECRETS ---
+.env
+security.db
+
+# Ignore Data
+intruders/*
+!intruders/.gitkeep
+known_faces/*
+!known_faces/.gitkeep
