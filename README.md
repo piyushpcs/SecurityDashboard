@@ -29,6 +29,18 @@
 
 ---
 
+## 🛡️ Security & VAPT
+
+As a security-focused project, **SentinelEye** has undergone Static Application Security Testing (SAST) to ensure code integrity.
+
+### Security Measures Implemented:
+* **Credential Isolation:** All sensitive API keys (Twilio, Gmail) and the Django `SECRET_KEY` are decoupled from the codebase using `.env` environment variables.
+* **Input Validation:** Strict file type and name sanitization in the face upload module to prevent Path Traversal and RCE attacks.
+* **SAST Scanning:** Audited codebase using **Bandit** to identify common Python vulnerabilities (achieved zero high-severity issues).
+* **CSRF Protection:** All state-changing HTTP requests (AJAX POSTs) are protected by Django's CSRF tokens.
+
+---
+
 ## 🛠️ Tech Stack
 
 * **Backend:** Django 4.2 (Python)
@@ -73,6 +85,7 @@ source venv/bin/activate
 python -m venv venv
 .\venv\Scripts\activate
 ```
+
 ### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
@@ -120,11 +133,6 @@ docker-compose up --build
 
 (Note: On macOS, Docker may not be able to access the built-in webcam directly. Docker deployment is best used with IP Cameras or on Linux hosts).
 
-**Windows:**
-```bash
-python -m venv venv
-.\venv\Scripts\activate
-```
 ### 📂 Project Structure
 ``` 
 SecurityDashboard/
